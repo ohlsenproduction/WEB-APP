@@ -4,6 +4,7 @@ import { renderLabelsView, openLabelFormModal } from './labels.js';
 import { renderCalendarWeekdayHeader, renderCalendarGrid, openDayDetailModal } from './calendar.js';
 import { confirmAction, todayISO } from './ui.js';
 import { maybeShowOnboarding } from './onboarding.js';
+import { openBackupModal } from './backup.js';
 
 const state = {
   tasks: [],
@@ -36,6 +37,7 @@ const dom = {
   calGrid: document.getElementById('cal-grid'),
   calPrev: document.getElementById('cal-prev'),
   calNext: document.getElementById('cal-next'),
+  backupBtn: document.getElementById('backup-btn'),
 };
 
 const HEADER_TITLES = { list: 'Aufgaben', calendar: 'Kalender', labels: 'Labels' };
@@ -198,6 +200,13 @@ dom.searchInput.addEventListener('input', (e) => actions.setSearchQuery(e.target
 
 dom.calPrev.addEventListener('click', () => actions.changeCalendarMonth(-1));
 dom.calNext.addEventListener('click', () => actions.changeCalendarMonth(1));
+
+dom.backupBtn.addEventListener('click', () => {
+  openBackupModal(state, async () => {
+    await loadData();
+    render();
+  });
+});
 
 function showStartupError() {
   document.getElementById('main').innerHTML = `

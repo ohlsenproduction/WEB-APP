@@ -57,6 +57,11 @@ export async function remove(storeName, id) {
   return promisifyRequest(store.delete(id));
 }
 
+export async function clear(storeName) {
+  const store = await getStore(storeName, 'readwrite');
+  return promisifyRequest(store.clear());
+}
+
 export function createId() {
   if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
