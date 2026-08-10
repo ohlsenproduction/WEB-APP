@@ -1,7 +1,10 @@
 const overlay = document.getElementById('modal-overlay');
 const container = document.getElementById('modal-container');
 
+let lastFocusedElement = null;
+
 export function openModal(node) {
+  lastFocusedElement = document.activeElement;
   container.innerHTML = '';
   container.appendChild(node);
   overlay.classList.remove('hidden');
@@ -10,6 +13,10 @@ export function openModal(node) {
 export function closeModal() {
   overlay.classList.add('hidden');
   container.innerHTML = '';
+  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+    lastFocusedElement.focus();
+  }
+  lastFocusedElement = null;
 }
 
 overlay.addEventListener('click', (event) => {
