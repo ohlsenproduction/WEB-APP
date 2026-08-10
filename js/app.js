@@ -199,8 +199,22 @@ dom.searchInput.addEventListener('input', (e) => actions.setSearchQuery(e.target
 dom.calPrev.addEventListener('click', () => actions.changeCalendarMonth(-1));
 dom.calNext.addEventListener('click', () => actions.changeCalendarMonth(1));
 
+function showStartupError() {
+  document.getElementById('main').innerHTML = `
+    <div class="empty-state" style="margin-top:80px;">
+      <div class="empty-state-title">App konnte nicht geladen werden</div>
+      <div class="empty-state-sub">Der lokale Speicher ist nicht verfügbar. Im privaten Modus des Browsers funktioniert das leider nicht &ndash; bitte normal öffnen und erneut versuchen.</div>
+    </div>
+  `;
+}
+
 async function init() {
-  await loadData();
+  try {
+    await loadData();
+  } catch (err) {
+    showStartupError();
+    return;
+  }
   render();
   maybeShowOnboarding();
 
