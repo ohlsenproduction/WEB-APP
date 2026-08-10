@@ -49,7 +49,12 @@ async function loadData() {
 
 function render() {
   Object.entries(dom.views).forEach(([key, node]) => node.classList.toggle('hidden', key !== state.view));
-  dom.navButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.view === state.view));
+  dom.navButtons.forEach((btn) => {
+    const isActive = btn.dataset.view === state.view;
+    btn.classList.toggle('active', isActive);
+    if (isActive) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
   dom.header.textContent = HEADER_TITLES[state.view];
 
   if (state.view === 'list') {
