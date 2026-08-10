@@ -61,16 +61,26 @@ export function renderCalendarGrid(container, state, actions) {
     if (cell.iso === todayStr) classes.push('today');
     if (cell.iso === selectedDate) classes.push('selected');
 
-    let dotColor = '';
+    const dotColors = [];
     if (dayTasks.length > 0) {
-      const firstLabel = labels.find((l) => l.id === dayTasks[0].labelIds[0]);
-      dotColor = firstLabel ? firstLabel.color : 'var(--color-accent)';
+      const seen = new Set();
+      dayTasks.forEach((t) => {
+        const label = labels.find((l) => l.id === t.labelIds[0]);
+        const color = label ? label.color : 'var(--color-accent)';
+        if (!seen.has(color)) {
+          seen.add(color);
+          dotColors.push(color);
+        }
+      });
     }
+    const dotsHTML = dotColors.slice(0, 3)
+      .map((color) => `<span class="calendar-day-dot" style="background:${color}"></span>`)
+      .join('');
 
     const node = el(`
       <button type="button" class="${classes.join(' ')}">
         <span class="day-num">${cell.day}</span>
-        ${dotColor ? `<span class="calendar-day-dot" style="background:${dotColor}"></span>` : '<span class="calendar-day-dot" style="background:transparent"></span>'}
+        <span class="calendar-day-dots">${dotsHTML}</span>
       </button>
     `);
     node.addEventListener('click', () => actions.selectCalendarDay(cell.iso));

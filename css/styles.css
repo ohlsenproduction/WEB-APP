@@ -367,11 +367,20 @@ button {
   justify-content: center;
 }
 
+.calendar-day-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 4px;
+}
+
 .calendar-day-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: var(--color-accent);
+  flex-shrink: 0;
 }
 
 /* — day detail sheet — */
