@@ -64,6 +64,14 @@ export function openLabelFormModal(existingLabel, onSave) {
   });
 
   node.querySelector('[data-action="cancel"]').addEventListener('click', closeModal);
+
+  node.querySelector('#label-name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      node.querySelector('[data-action="save"]').click();
+    }
+  });
+
   node.querySelector('[data-action="save"]').addEventListener('click', () => {
     const nameInput = node.querySelector('#label-name-input');
     const name = nameInput.value.trim();

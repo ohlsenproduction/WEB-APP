@@ -16,6 +16,10 @@ overlay.addEventListener('click', (event) => {
   if (event.target === overlay) closeModal();
 });
 
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !overlay.classList.contains('hidden')) closeModal();
+});
+
 export function el(html) {
   const template = document.createElement('template');
   template.innerHTML = html.trim();

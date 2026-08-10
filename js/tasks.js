@@ -185,6 +185,13 @@ export function openTaskFormModal({ task, presetDate, labels, onSave, onDelete }
     node.querySelector('[data-action="delete"]').addEventListener('click', () => onDelete(task));
   }
 
+  node.querySelector('#task-title-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      node.querySelector('[data-action="save"]').click();
+    }
+  });
+
   node.querySelector('[data-action="save"]').addEventListener('click', () => {
     const titleInput = node.querySelector('#task-title-input');
     const title = titleInput.value.trim();
