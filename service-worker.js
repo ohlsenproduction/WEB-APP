@@ -1,5 +1,6 @@
-const CACHE_VERSION = 'v3';
-const CACHE_NAME = `aufgaben-shell-${CACHE_VERSION}`;
+importScripts('./js/version.js');
+
+const CACHE_NAME = `aufgaben-shell-${self.APP_VERSION}`;
 
 const APP_SHELL = [
   './',
@@ -14,6 +15,7 @@ const APP_SHELL = [
   './js/ui.js',
   './js/onboarding.js',
   './js/backup.js',
+  './js/version.js',
   './icons/icon-180.png',
   './icons/icon-192.png',
   './icons/icon-512.png',

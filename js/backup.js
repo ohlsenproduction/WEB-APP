@@ -32,6 +32,7 @@ export function openBackupModal(state, onImported) {
           <button type="button" class="btn btn-secondary" data-action="cancel">Schließen</button>
         </div>
       </div>
+      <p style="color:var(--color-neutral-600);font-size:11px;text-align:center;margin:14px 0 0;">Version ${window.APP_VERSION || '?'}</p>
     </div>
   `);
 
