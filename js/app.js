@@ -114,7 +114,7 @@ const actions = {
   },
 
   openLabelForm(label) {
-    openLabelFormModal(label, (data) => saveLabel(label, data));
+    openLabelFormModal(label, state.labels, (data) => saveLabel(label, data));
   },
 
   async deleteLabel(label) {

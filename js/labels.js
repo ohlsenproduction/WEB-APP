@@ -28,7 +28,7 @@ export function renderLabelsView(container, state, actions) {
     });
 }
 
-export function openLabelFormModal(existingLabel, onSave) {
+export function openLabelFormModal(existingLabel, existingLabels, onSave) {
   let selectedColor = existingLabel ? existingLabel.color : PRESET_COLORS[0];
 
   const node = el(`
@@ -37,6 +37,7 @@ export function openLabelFormModal(existingLabel, onSave) {
       <div class="field">
         <label for="label-name-input">Name</label>
         <input type="text" class="input" id="label-name-input" maxlength="30" value="${existingLabel ? escapeHtml(existingLabel.name) : ''}" placeholder="z. B. Zuhause">
+        <p class="field-error hidden" id="label-name-error">Dieser Name wird schon verwendet.</p>
       </div>
       <div class="field">
         <label>Farbe</label>
@@ -74,8 +75,18 @@ export function openLabelFormModal(existingLabel, onSave) {
 
   node.querySelector('[data-action="save"]').addEventListener('click', () => {
     const nameInput = node.querySelector('#label-name-input');
+    const errorEl = node.querySelector('#label-name-error');
     const name = nameInput.value.trim();
+    errorEl.classList.add('hidden');
     if (!name) {
+      nameInput.focus();
+      return;
+    }
+    const isDuplicate = existingLabels.some((l) => (
+      l.id !== existingLabel?.id && l.name.trim().toLowerCase() === name.toLowerCase()
+    ));
+    if (isDuplicate) {
+      errorEl.classList.remove('hidden');
       nameInput.focus();
       return;
     }
