@@ -55,13 +55,13 @@ export function renderFilterChips(container, state, actions) {
   container.innerHTML = '';
   if (state.labels.length === 0) return;
 
-  const allChip = el(`<button type="button" class="filter-chip${state.filterLabelId ? '' : ' active'}">Alle</button>`);
+  const allChip = el(`<button type="button" class="filter-chip${state.filterLabelId ? '' : ' active'}" aria-pressed="${state.filterLabelId ? 'false' : 'true'}">Alle</button>`);
   allChip.addEventListener('click', () => actions.setFilterLabel(null));
   container.appendChild(allChip);
 
   state.labels.forEach((label) => {
     const active = state.filterLabelId === label.id;
-    const chip = el(`<button type="button" class="filter-chip${active ? ' active' : ''}" style="${active ? `border-color:${label.color};color:${label.color}` : ''}">${escapeHtml(label.name)}</button>`);
+    const chip = el(`<button type="button" class="filter-chip${active ? ' active' : ''}" aria-pressed="${active ? 'true' : 'false'}" style="${active ? `border-color:${label.color};color:${label.color}` : ''}">${escapeHtml(label.name)}</button>`);
     chip.addEventListener('click', () => actions.setFilterLabel(label.id));
     container.appendChild(chip);
   });
