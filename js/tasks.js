@@ -1,5 +1,15 @@
 import { el, escapeHtml, closeModal, openModal, formatDateShort, labelChipHTML, todayISO } from './ui.js';
 
+export const PRIORITIES = {
+  high: { label: 'Hoch', color: 'var(--color-danger)', rank: 0 },
+  medium: { label: 'Mittel', color: '#d9c374', rank: 1 },
+  low: { label: 'Niedrig', color: 'var(--color-neutral-500)', rank: 2 },
+};
+
+function priorityRank(task) {
+  return task.priority && PRIORITIES[task.priority] ? PRIORITIES[task.priority].rank : 3;
+}
+
 function isOverdue(task) {
   return Boolean(task.dueDate) && !task.done && task.dueDate < todayISO();
 }
@@ -21,6 +31,9 @@ export function sortTasks(tasks, sortMode, labels) {
       break;
     case 'alpha':
       copy.sort((a, b) => a.title.localeCompare(b.title, 'de'));
+      break;
+    case 'priority':
+      copy.sort((a, b) => priorityRank(a) - priorityRank(b) || cmpDate(a, b));
       break;
     case 'date':
     default:
@@ -102,6 +115,7 @@ export function renderTaskList(container, state, actions) {
           <p class="task-title">${escapeHtml(task.title)}</p>
           ${task.notes ? `<p class="task-notes-preview">${escapeHtml(task.notes)}</p>` : ''}
           <div class="task-meta">
+            ${task.priority && PRIORITIES[task.priority] ? `<span class="priority-flag" style="color:${PRIORITIES[task.priority].color}"><span class="priority-dot" style="background:${PRIORITIES[task.priority].color}"></span>${PRIORITIES[task.priority].label}</span>` : ''}
             ${task.dueDate ? `<span class="task-date${isOverdue(task) ? ' overdue' : ''}">${formatDateShort(task.dueDate)}</span>` : ''}
             ${labels.map(labelChipHTML).join('')}
           </div>
@@ -120,6 +134,7 @@ export function renderTaskList(container, state, actions) {
 export function openTaskFormModal({ task, presetDate, labels, onSave, onDelete }) {
   const selectedLabelIds = new Set(task ? task.labelIds : []);
   let done = task ? task.done : false;
+  let priority = task ? (task.priority || null) : null;
 
   const node = el(`
     <div>
@@ -135,6 +150,10 @@ export function openTaskFormModal({ task, presetDate, labels, onSave, onDelete }
       <div class="field">
         <label for="task-date-input">Fälligkeitsdatum</label>
         <input type="date" class="input" id="task-date-input" value="${task ? (task.dueDate || '') : (presetDate || '')}">
+      </div>
+      <div class="field">
+        <label>Priorität</label>
+        <div class="label-picker" id="task-priority-picker"></div>
       </div>
       <div class="field">
         <label>Labels</label>
@@ -155,6 +174,23 @@ export function openTaskFormModal({ task, presetDate, labels, onSave, onDelete }
       </div>
     </div>
   `);
+
+  const priorityPicker = node.querySelector('#task-priority-picker');
+  const priorityOptions = [{ key: null, label: 'Keine' }, ...Object.entries(PRIORITIES).map(([key, p]) => ({ key, label: p.label, color: p.color }))];
+  priorityOptions.forEach((opt) => {
+    const active = priority === opt.key;
+    const btn = el(`<button type="button" class="tag ${active ? '' : 'tag-outline'}" style="${opt.color ? (active ? `background:color-mix(in srgb, ${opt.color} 30%, var(--color-surface-2));color:${opt.color};border:1px solid ${opt.color}` : `color:${opt.color};border-color:${opt.color}`) : ''}">${opt.label}</button>`);
+    btn.addEventListener('click', () => {
+      priority = opt.key;
+      priorityPicker.querySelectorAll('button').forEach((b, i) => {
+        const isActive = priorityOptions[i].key === priority;
+        const o = priorityOptions[i];
+        b.className = `tag ${isActive ? '' : 'tag-outline'}`;
+        b.style.cssText = o.color ? (isActive ? `background:color-mix(in srgb, ${o.color} 30%, var(--color-surface-2));color:${o.color};border:1px solid ${o.color}` : `color:${o.color};border-color:${o.color}`) : '';
+      });
+    });
+    priorityPicker.appendChild(btn);
+  });
 
   const picker = node.querySelector('#task-label-picker');
   labels.forEach((label) => {
@@ -207,6 +243,7 @@ export function openTaskFormModal({ task, presetDate, labels, onSave, onDelete }
       dueDate,
       notes,
       done,
+      priority,
       labelIds: Array.from(selectedLabelIds),
     });
   });
