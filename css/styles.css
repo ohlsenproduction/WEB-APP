@@ -243,6 +243,11 @@ button {
   color: var(--color-neutral-500);
 }
 
+.task-date.overdue {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
 .tag {
   display: inline-flex;
   align-items: center;

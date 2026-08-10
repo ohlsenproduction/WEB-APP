@@ -1,4 +1,8 @@
-import { el, escapeHtml, closeModal, openModal, formatDateShort, labelChipHTML } from './ui.js';
+import { el, escapeHtml, closeModal, openModal, formatDateShort, labelChipHTML, todayISO } from './ui.js';
+
+function isOverdue(task) {
+  return Boolean(task.dueDate) && !task.done && task.dueDate < todayISO();
+}
 
 export function sortTasks(tasks, sortMode, labels) {
   const labelName = (id) => (labels.find((l) => l.id === id)?.name ?? '￿');
@@ -79,7 +83,7 @@ export function renderTaskList(container, state, actions) {
           <p class="task-title">${escapeHtml(task.title)}</p>
           ${task.notes ? `<p class="task-notes-preview">${escapeHtml(task.notes)}</p>` : ''}
           <div class="task-meta">
-            ${task.dueDate ? `<span class="task-date">${formatDateShort(task.dueDate)}</span>` : ''}
+            ${task.dueDate ? `<span class="task-date${isOverdue(task) ? ' overdue' : ''}">${formatDateShort(task.dueDate)}</span>` : ''}
             ${labels.map(labelChipHTML).join('')}
           </div>
         </button>
