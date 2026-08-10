@@ -37,9 +37,18 @@ function cmpDate(a, b) {
   return a.createdAt.localeCompare(b.createdAt);
 }
 
-export function filterTasks(tasks, filterLabelId) {
-  if (!filterLabelId) return tasks;
-  return tasks.filter((t) => t.labelIds.includes(filterLabelId));
+export function filterTasks(tasks, filterLabelId, searchQuery) {
+  let result = tasks;
+  if (filterLabelId) {
+    result = result.filter((t) => t.labelIds.includes(filterLabelId));
+  }
+  const query = (searchQuery || '').trim().toLowerCase();
+  if (query) {
+    result = result.filter((t) => (
+      t.title.toLowerCase().includes(query) || (t.notes || '').toLowerCase().includes(query)
+    ));
+  }
+  return result;
 }
 
 export function renderSortSeg(container, state, actions) {
@@ -68,11 +77,21 @@ export function renderFilterChips(container, state, actions) {
 }
 
 export function renderTaskList(container, state, actions) {
-  const filtered = filterTasks(state.tasks, state.filterLabelId);
+  const filtered = filterTasks(state.tasks, state.filterLabelId, state.searchQuery);
   const sorted = sortTasks(filtered, state.sort, state.labels);
 
   container.innerHTML = '';
-  document.getElementById('task-empty').classList.toggle('hidden', sorted.length > 0);
+  const empty = document.getElementById('task-empty');
+  empty.classList.toggle('hidden', sorted.length > 0);
+  if (sorted.length === 0 && state.tasks.length > 0) {
+    empty.querySelector('.empty-state-title').textContent = 'Keine Treffer';
+    empty.querySelector('.empty-state-sub').textContent = 'Keine Aufgaben passen zu deiner Suche oder Filterung.';
+    empty.querySelector('#empty-add-btn').classList.add('hidden');
+  } else {
+    empty.querySelector('.empty-state-title').textContent = 'Keine Aufgaben';
+    empty.querySelector('.empty-state-sub').textContent = 'Leg deine erste Aufgabe an, um loszulegen.';
+    empty.querySelector('#empty-add-btn').classList.remove('hidden');
+  }
 
   sorted.forEach((task) => {
     const labels = task.labelIds.map((id) => state.labels.find((l) => l.id === id)).filter(Boolean);

@@ -11,6 +11,7 @@ const state = {
   view: 'list',
   sort: 'date',
   filterLabelId: null,
+  searchQuery: '',
   calendarYear: new Date().getFullYear(),
   calendarMonth: new Date().getMonth(),
   selectedDate: null,
@@ -27,6 +28,7 @@ const dom = {
   fab: document.getElementById('fab-add'),
   sortSeg: document.getElementById('sort-seg'),
   filterChips: document.getElementById('filter-chips'),
+  searchInput: document.getElementById('task-search-input'),
   taskList: document.getElementById('task-list'),
   emptyAddBtn: document.getElementById('empty-add-btn'),
   labelList: document.getElementById('label-list'),
@@ -87,6 +89,11 @@ const actions = {
 
   setFilterLabel(labelId) {
     state.filterLabelId = labelId;
+    render();
+  },
+
+  setSearchQuery(query) {
+    state.searchQuery = query;
     render();
   },
 
@@ -181,6 +188,8 @@ dom.emptyAddBtn.addEventListener('click', () => actions.openTaskForm(null));
 dom.sortSeg.addEventListener('change', (e) => {
   if (e.target.name === 'sort') actions.setSort(e.target.value);
 });
+
+dom.searchInput.addEventListener('input', (e) => actions.setSearchQuery(e.target.value));
 
 dom.calPrev.addEventListener('click', () => actions.changeCalendarMonth(-1));
 dom.calNext.addEventListener('click', () => actions.changeCalendarMonth(1));
